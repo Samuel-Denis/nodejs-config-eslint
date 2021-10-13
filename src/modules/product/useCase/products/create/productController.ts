@@ -1,3 +1,4 @@
+import { IProducts } from '@modules/product/DTOs/productsDTO';
 import  { Request, Response } from 'express'
 import { container } from 'tsyringe'
 import { ProductUseCase } from './productUseCase';
@@ -10,17 +11,24 @@ class ProductController {
             name,
             valor,
             description,
-            estoque
-        } = req.body
+            estoque,
+            type
+        }: IProducts = req.body;
+
+        const { id } = req.params;
 
         const productUseCade = container.resolve(ProductUseCase);
 
-        const p = await productUseCade.execute({
+        const p = await productUseCade.execute(
+            {
             name,
             valor,
             description,
-            estoque
-        })
+            estoque,
+            type,
+        } as IProducts,
+        id
+        )
 
         return res.status(201).json(p.id);
     }

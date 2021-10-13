@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { v4 as uuidV4} from 'uuid'
+import { Category } from './category';
 
 @Entity('products')
 class Product {
@@ -18,6 +19,16 @@ class Product {
 
     @Column()
     estoque: number;
+
+    @Column()
+    type: string;
+
+    @ManyToOne(() => Category)
+    @JoinColumn({ name: "category_id" })
+    category: Category;
+  
+    @Column()
+    category_id: string;
 
     @Column()
     image?: string;

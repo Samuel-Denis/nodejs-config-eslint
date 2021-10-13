@@ -1,12 +1,11 @@
-import { query } from "express";
 import {MigrationInterface, QueryRunner, Table} from "typeorm";
 
-export class CreateProduct1627436943566 implements MigrationInterface {
+export class createProductsDestaques1633473086829 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
-                name: 'products',
+                name: 'destaques',
                 columns: [
                     {
                         name: 'id',
@@ -14,12 +13,9 @@ export class CreateProduct1627436943566 implements MigrationInterface {
                         isPrimary: true
                     },
                     {
-                        name: 'name',
-                        type: 'varchar'
-                    },
-                    {
-                        name: 'description',
-                        type: 'varchar',
+                        name: 'product_id',
+                        type: 'uuid',
+                        isNullable: false
                     },
                     {
                         name: 'image',
@@ -27,26 +23,27 @@ export class CreateProduct1627436943566 implements MigrationInterface {
                         isNullable: true
                     },
                     {
-                        name: 'estoque',
-                        type: 'integer'
-                    },
-                    {
-                        name: 'valor',
-                        type: 'numeric',
-                        isNullable: false
-                    },
-                    {
                         name: 'created_at',
                         type: 'timestamp',
                         default: 'now()'
                     }
+                ],
+                foreignKeys: [
+                    {
+                        name: 'FKProduct',
+                        referencedTableName: 'products',
+                        referencedColumnNames: ['id'],
+                        columnNames: ['product_id'],
+                        onDelete: "CASCADE",
+                        onUpdate: "CASCADE",
+                    } 
                 ]
             })
         )
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.dropTable('products');
+        await queryRunner.dropTable('destaques');
     }
 
 }

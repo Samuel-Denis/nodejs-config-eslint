@@ -6,7 +6,6 @@ class UpdateImageProductController {
 
     async handler(req: Request, res: Response): Promise<Response> {
         const { id } = req.params
-        console.log(req.file)
         const imageName = req.file.filename
 
         const updateImageProductUseCase = container.resolve(UpdateImageProductUseCase)

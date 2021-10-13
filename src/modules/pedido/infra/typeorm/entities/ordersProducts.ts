@@ -11,11 +11,17 @@ class OrderProducts {
 
     @ManyToOne(() => Pedido)
     @JoinColumn({ name: 'pedido_id'})
+    pedido: Pedido;
+
+    @Column()
     pedido_id: string;
 
 
     @ManyToOne(() => Product)
     @JoinColumn({ name: 'product_id' })
+    product: Product;
+
+    @Column()
     product_id: string;
 
     @Column()

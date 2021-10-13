@@ -1,5 +1,5 @@
-import { CreatePedidoController } from '@modules/pedido/useCase/createPedido/createPedidoController'
-import { ListarPedidoController } from '@modules/pedido/useCase/listarPedidos/listarPedidosController';
+import { CreatePedidoController } from '@modules/pedido/useCases/createPedido/createPedidoController'
+import { ListarPedidoController } from '@modules/pedido/useCases/listarPedidos/listarPedidosController';
 import { Router } from 'express'
 import { ensureAuthenticated } from '../middlewares/ensureAthenticare';
 

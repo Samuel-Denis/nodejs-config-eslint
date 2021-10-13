@@ -1,6 +1,7 @@
 import { IProducts } from "@modules/product/DTOs/productsDTO";
 import { IProductRespositories } from "@modules/product/IRepositories/IProductsRepositories";
 import { getRepository, Repository } from "typeorm";
+import { Category } from "../typeorm/entities/category";
 import { Product } from "../typeorm/entities/Product";
 
 class ProductsRepositories implements IProductRespositories {
@@ -16,7 +17,9 @@ class ProductsRepositories implements IProductRespositories {
         image,
         valor,
         description,
-        estoque
+        estoque,
+        category,
+        type
     }: IProducts): Promise<Product> {
         const product = this.repository.create({
             name,
@@ -24,7 +27,9 @@ class ProductsRepositories implements IProductRespositories {
             image,
             valor,
             description,
-            estoque  
+            estoque,
+            category,
+            type
         })
 
         return await this.repository.save(product)
@@ -40,8 +45,18 @@ class ProductsRepositories implements IProductRespositories {
         return all
     }
 
-     findById(id: string): Promise<Product>{
+    async findById( id : string): Promise<Product>{
         return this.repository.findOne(id)
+    }
+
+    async findByCategory(category_id: string): Promise<Product[]>{
+        return this.repository.find({
+            where: { category_id }
+        })
+    }
+
+    async listAllProductsIds (ids : string[]): Promise<Product[]> {
+        return await this.repository.findByIds(ids);
     }
 
 }

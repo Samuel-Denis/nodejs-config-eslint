@@ -15,17 +15,9 @@ class CreateOrderProductsUseCase {
     ){}
 
     async execute(order: IOrderProductsDTO, pedido_id: string) : Promise<void>{
-        
-        const product = await this.productRepository.findById(order.product_id)
-
-        if(!product){
-                product.estoque += order.quantidade
-                await this.productRepository.create(product)
-            throw new AppError('Erro ao processar pedido, produto não encontrado !!!')
-        }
-
+    
         order.pedido_id = pedido_id
-        order.valor = order.quantidade * product.valor
+        order.valor = order.quantidade * order.product.valor;
 
        await this.ordersProductsRepositories.create(order)}
 }

@@ -24,6 +24,7 @@ export class CreateProductsOrderProducts1627787143997 implements MigrationInterf
                         name: 'quantidade',
                         type: 'int4'
                     },
+                    //remover essa coluna dps
                     {
                         name: 'valor',
                         type: 'float4'

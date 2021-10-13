@@ -11,6 +11,10 @@ import { IOrdersPedidosRepositories } from '@modules/pedido/IRepositories/IOrder
 import { OrdersProductsRepositories } from '@modules/pedido/infra/repositories/ordersProductsRepositories';
 import { IUsersTokensRepository } from '@modules/user/IRepositories/IUsersTokensRepository';
 import { UsersTokensRepository } from '@modules/user/infra/repositories/UsersTokensRepository';
+import { ICartRepositories } from '@modules/carrinho/IRepositories/IRepositoriesCart';
+import { ICartProductsRepositories } from '@modules/carrinho/IRepositories/IRepositoriesCartProducts';
+import { CartRepositories } from '@modules/carrinho/infra/repositories/cartRepositroies';
+import { CarProductsRepositories } from '@modules/carrinho/infra/repositories/cartProductsRepositories';
 
 container.registerSingleton<IUserRepository>(
   'UserRepository', UserRepository,
@@ -34,6 +38,14 @@ container.registerSingleton<IOrdersPedidosRepositories>(
 
 container.registerSingleton<IUsersTokensRepository>(
   "UsersTokenRepository", UsersTokensRepository
+);
+
+container.registerSingleton<ICartRepositories>(
+  "CartRepositories", CartRepositories
+);
+
+container.registerSingleton<ICartProductsRepositories>(
+  "CarProductsRepositories", CarProductsRepositories
 );
 
 

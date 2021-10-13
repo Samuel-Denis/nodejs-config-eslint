@@ -6,9 +6,11 @@ import { IProductRespositories } from "@modules/product/IRepositories/IProductsR
 import { AppError } from "@shared/errors/appError";
 import { container, inject, injectable } from "tsyringe";
 import { CreateOrderProductsUseCase } from "../createOrderProducts/createOrdersProductsUseCas";
+import { ListarCarrinhoUseCase } from '@modules/carrinho/useCases/list/listarCarrinhoUseCase';
+import { ICartRepositories } from "@modules/carrinho/IRepositories/IRepositoriesCart";
 
 interface IRequest {
-    orderProducts: IOrderProductsDTO[]
+    user_id: string,
 }
 
 interface IResponse {
@@ -25,58 +27,75 @@ class CreatePedidoUseCase {
         @inject('OrdersProductsRepositories')
         private ordersProductsRepositories: IOrdersPedidosRepositories,
         @inject('ProductsRepositories')
-        private productRepository: IProductRespositories
+        private productRepository: IProductRespositories,
+        @inject('CartRepositories')
+        private cartsRepositories: ICartRepositories,
     ){}
 
-    async execute(user_id: string, orderProducts: IRequest): Promise<IResponse>{
+    async execute({ user_id }: IRequest): Promise<IResponse>{
 
-      for(let i = 0; i < orderProducts.orderProducts.length; i++){
-        const product = await this.productRepository.findById(orderProducts.orderProducts[i].product_id)
+       const itemsPedido : IOrderProductsDTO[] = [];
 
+       const listarCarrinhoUseCase = container.resolve(ListarCarrinhoUseCase);
+   
+       const productsOrder = await listarCarrinhoUseCase.execute(user_id);
+      
+       if(!productsOrder){
+        throw new AppError('Erro ao realizar pedido, tente mais tarde')
+       }
+     
+      for(let i = 0; i < productsOrder.length; i++){
+        const product = await this.productRepository.findById(productsOrder[i].product.id)
+        console.log(i)
         if(!product){
             throw new AppError('Erro ao processar pedido, produto não encontrado !!!')
         }
-
-        if(product.estoque < orderProducts.orderProducts[i].quantidade){
+        if(product.estoque < productsOrder[i].quantidade){
             throw new AppError('Erro ao processar pedido, quantidade do produto em estoque insuficiente')
         }
-
-        product.estoque -= orderProducts.orderProducts[i].quantidade
-
+        product.estoque -= productsOrder[i].quantidade
+        
         await this.productRepository.create(product)
       }
-
       const pedido =  await this.pedidosRepositories.create({user_id, valor_total: 0})
-
+     
       if(!pedido){
-        for(let i = 0; i < orderProducts.orderProducts.length; i++){
-            const product = await this.productRepository.findById(orderProducts.orderProducts[i].product_id)
-    
-            product.estoque += orderProducts.orderProducts[i].quantidade
-    
+        for(let i = 0; i < productsOrder.length; i++){
+            const product = await this.productRepository.findById(productsOrder[i].product.id)
+            
+            product.estoque += productsOrder[i].quantidade
+            
             await this.productRepository.create(product)
           }
           throw new AppError('Algo de errado acontenceu, tente mais tarde !!')
       }
-
+      
+      for(let i = 0; i < productsOrder.length; i++){
+        const p : IOrderProductsDTO = {
+            pedido_id: pedido.id,
+            product: productsOrder[i].product,
+            quantidade: productsOrder[i].quantidade
+        }
+           itemsPedido.push(p)
+       }
+       
       const createOrderProductsUseCase = container.resolve(CreateOrderProductsUseCase)
 
-      for(let i = 0; i <  orderProducts.orderProducts.length; i++){
+      for(let i = 0; i <  itemsPedido.length; i++){
         
         await createOrderProductsUseCase.execute(
-           orderProducts.orderProducts[i],
+           itemsPedido[i],
            pedido.id
            )
       }
 
       const listProductsOrder = await this.ordersProductsRepositories.list(pedido.id)
-
+      
       let valor: number = 0 ;
 
       listProductsOrder.map( async (order) => {
             valor = valor + order.valor
       })
-
       pedido.valor_total = valor;
 
       const newOrder = await this.pedidosRepositories.create(pedido)
@@ -86,6 +105,8 @@ class CreatePedidoUseCase {
           orderProducts: listProductsOrder
       }
 
+      await this.cartsRepositories.removeCartUser(user_id);
+      
       return response
     }
 }

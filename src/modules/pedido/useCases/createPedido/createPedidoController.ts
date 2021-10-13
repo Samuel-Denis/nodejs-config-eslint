@@ -13,11 +13,9 @@ class CreatePedidoController {
     async handler(req: Request, res: Response): Promise<Response> {
         const user_id: string = req.user.id
 
-        const orderProducts: IRequest = req.body
-
         const createPedidoUseCase = container.resolve(CreatePedidoUseCase)
 
-        const response = await createPedidoUseCase.execute(user_id, orderProducts)
+        const response = await createPedidoUseCase.execute({user_id})
 
 
         return res.json(response);

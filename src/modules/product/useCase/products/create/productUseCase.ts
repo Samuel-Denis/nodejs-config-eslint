@@ -1,5 +1,6 @@
 import { IProducts } from "@modules/product/DTOs/productsDTO"
 import { Product } from "@modules/product/infra/typeorm/entities/Product"
+import { ICategoriesRepositories } from "@modules/product/IRepositories/ICategoriesRepositories"
 import { IProductRespositories } from "@modules/product/IRepositories/IProductsRepositories"
 import { AppError } from "@shared/errors/appError"
 import { inject, injectable } from "tsyringe"
@@ -9,16 +10,25 @@ class ProductUseCase {
 
     constructor(
         @inject('ProductsRepositories')
-        private productRepository: IProductRespositories
+        private productRepository: IProductRespositories,
+
+        @inject('CategoriesRespositories')
+        private categoriesRepositories: ICategoriesRepositories,
     ){}
 
     async execute({
         name,
         valor,
         description,
-        estoque
-    }: IProducts): Promise<Product>{
+        estoque,
+        type
+    }: IProducts, c: string): Promise<Product>{
 
+        const category = await this.categoriesRepositories.findById(c);
+
+        if(!category){
+            throw new AppError('Categoria não existe');
+        }
         const product = await this.productRepository.findByName(name)
 
         if(product){
@@ -29,7 +39,9 @@ class ProductUseCase {
             name,
             valor,
             description,
-            estoque
+            estoque,
+            type: type.toUpperCase(),
+            category,
         })
     }
 }

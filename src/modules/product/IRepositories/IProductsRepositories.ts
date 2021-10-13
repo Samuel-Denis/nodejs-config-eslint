@@ -5,7 +5,9 @@ interface IProductRespositories {
     create(data: IProducts): Promise<Product>
     findByName(name: string): Promise<Product>
     list(): Promise<Product[]>
-    findById(name: string): Promise<Product>
+    listAllProductsIds(ids : String[]): Promise<Product[]>
+    findById(id: string): Promise<Product>
+    findByCategory(category_id: string): Promise<Product[]>
 }
 
 

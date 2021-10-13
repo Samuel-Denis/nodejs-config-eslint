@@ -16,12 +16,12 @@ class OrdersProductsRepositories implements IOrdersPedidosRepositories {
         pedido_id,
         quantidade,
         valor,
-        product_id
+        product
     }: IOrderProductsDTO): Promise<void> {
         const orderProduct = this.repository.create({
             id,
             pedido_id,
-            product_id,
+            product,
             quantidade,
             valor
         })

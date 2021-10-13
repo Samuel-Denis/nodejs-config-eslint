@@ -69,7 +69,7 @@ class AuthenticateUseCase {
       refresh_token,
       user: {
         name: user.name,
-        avatar: user.avatar,
+        avatar:`tmp/avatar/${user.avatar}`
       },
     };
 

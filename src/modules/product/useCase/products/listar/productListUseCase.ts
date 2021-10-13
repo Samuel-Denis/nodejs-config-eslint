@@ -18,7 +18,7 @@ class ProductListUseCase {
         const products = await this.productsRepositories.list();
 
         for(var i = 0; i < products.length; i++){
-            products[i].image = `tmp/product/${products[i].image}`
+            products[i].image = products[i].image
         }
 
         return products;
